@@ -7,6 +7,8 @@
     <title>Galactic Hunter - Alien Catcher Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Telegram Web Apps SDK to initialize the mini app -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: 'Orbitron', sans-serif;
@@ -272,6 +274,7 @@
         const alienClasses = ['alien-1', 'alien-2', 'alien-3', 'alien-4', 'alien-5', 'alien-6'];
 
         let result = 0;
+        let hitPosition;
         let currentTime = 60;
         let timerId = null;
         let countDownTimerId = null;
@@ -294,22 +297,29 @@
             let randomSquare = squares[Math.floor(Math.random() * squares.length)];
             const randomAlienClass = alienClasses[Math.floor(Math.random() * alienClasses.length)];
             randomSquare.classList.add('alien', randomAlienClass);
+            hitPosition = randomSquare.id;
         }
 
         // Add event listeners for pointer events (unifies touch and click)
         squares.forEach((square) => {
             square.addEventListener("pointerdown", (e) => {
+                // Check if the event is a double click or double touch
+                if (e.detail > 1) {
+                    return;
+                }
+
                 // Prevent default touch behaviors like scrolling
                 e.preventDefault(); 
                 
                 // Stop event from propagating to other elements
                 e.stopPropagation();
 
-                // Check if the touched/clicked square has the alien
-                if (square.classList.contains('alien')) {
+                // Use hitPosition to ensure the same alien is not hit twice
+                if (square.id == hitPosition) {
                     result++;
                     score.textContent = result;
                     square.classList.remove('alien', ...alienClasses); // Remove the alien immediately
+                    hitPosition = null; // Invalidate the target to prevent double-counting
                 }
             });
         });
@@ -344,15 +354,25 @@
             currentTime = 60;
             score.textContent = result;
             timeLeft.textContent = currentTime;
+            hitPosition = null;
+            // Clear any lingering alien classes
             squares.forEach(square => square.classList.remove('alien', ...alienClasses));
             startGame();
         }
         
         function startGame() {
+            // Check if Telegram WebApp is available and initialize
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                // Optional: set a background color that matches the theme
+                window.Telegram.WebApp.setBackgroundColor("#1a2238");
+            }
+            
             moveEmoji();
             countDownTimerId = setInterval(countDown, 1000);
         }
 
+        // Start the game when the page loads
         window.onload = function() {
             startGame();
         }
