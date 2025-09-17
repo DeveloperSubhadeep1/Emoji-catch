@@ -124,12 +124,29 @@
             line-height: 1;
         }
 
-        .alien-1::before { content: '👽'; }
-        .alien-2::before { content: '👾'; }
-        .alien-3::before { content: '🤖'; }
-        .alien-4::before { content: '🛸'; }
-        .alien-5::before { content: '🚀'; }
-        .alien-6::before { content: '☄️'; }
+        .alien-1::before {
+            content: '👽';
+        }
+
+        .alien-2::before {
+            content: '👾';
+        }
+
+        .alien-3::before {
+            content: '🤖';
+        }
+
+        .alien-4::before {
+            content: '🛸';
+        }
+
+        .alien-5::before {
+            content: '🚀';
+        }
+
+        .alien-6::before {
+            content: '☄️';
+        }
 
         @keyframes pulse {
             0% {
@@ -283,15 +300,22 @@
 
         // Add event listeners for touch and click
         squares.forEach((square) => {
-            function handleInteraction() {
-                if (square.id === hitPosition) {
+            function handleInteraction(e) {
+                // Prevent default touch behaviors like scrolling
+                e.preventDefault(); 
+                
+                // Stop event from propagating to other elements
+                e.stopPropagation();
+
+                // Check if the touched/clicked square has the alien
+                if (square.classList.contains('alien')) {
                     result++;
                     score.textContent = result;
-                    hitPosition = null;
+                    square.classList.remove('alien', ...alienClasses); // Remove the alien immediately to prevent double-counting
                 }
             }
             square.addEventListener("touchstart", handleInteraction, { passive: false });
-            square.addEventListener("touchend", handleInteraction);
+            square.addEventListener("click", handleInteraction);
         });
 
         function moveEmoji() {
