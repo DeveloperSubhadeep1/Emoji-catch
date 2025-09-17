@@ -272,7 +272,6 @@
         const alienClasses = ['alien-1', 'alien-2', 'alien-3', 'alien-4', 'alien-5', 'alien-6'];
 
         let result = 0;
-        let hitPosition;
         let currentTime = 60;
         let timerId = null;
         let countDownTimerId = null;
@@ -295,12 +294,11 @@
             let randomSquare = squares[Math.floor(Math.random() * squares.length)];
             const randomAlienClass = alienClasses[Math.floor(Math.random() * alienClasses.length)];
             randomSquare.classList.add('alien', randomAlienClass);
-            hitPosition = randomSquare.id;
         }
 
-        // Add event listeners for touch and click
+        // Add event listeners for pointer events (unifies touch and click)
         squares.forEach((square) => {
-            function handleInteraction(e) {
+            square.addEventListener("pointerdown", (e) => {
                 // Prevent default touch behaviors like scrolling
                 e.preventDefault(); 
                 
@@ -311,11 +309,9 @@
                 if (square.classList.contains('alien')) {
                     result++;
                     score.textContent = result;
-                    square.classList.remove('alien', ...alienClasses); // Remove the alien immediately to prevent double-counting
+                    square.classList.remove('alien', ...alienClasses); // Remove the alien immediately
                 }
-            }
-            square.addEventListener("touchstart", handleInteraction, { passive: false });
-            square.addEventListener("click", handleInteraction);
+            });
         });
 
         function moveEmoji() {
@@ -348,7 +344,6 @@
             currentTime = 60;
             score.textContent = result;
             timeLeft.textContent = currentTime;
-            hitPosition = null;
             squares.forEach(square => square.classList.remove('alien', ...alienClasses));
             startGame();
         }
