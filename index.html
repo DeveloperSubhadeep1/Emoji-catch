@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8" />
@@ -221,31 +221,31 @@
         <h1 class="text-3xl font-bold mb-4 text-center">Galactic Hunter</h1>
         <div class="scores-container">
             <div class="score-box">
-                <h2>স্কোর</h2>
+                <h2>Score</h2>
                 <h2 id="score">0</h2>
             </div>
             <div class="score-box">
-                <h2>সময় বাকি</h2>
+                <h2>Time Left</h2>
                 <h2 id="time-left">60</h2>
             </div>
         </div>
 
         <div class="grid" id="grid">
-            <!-- জাভাস্ক্রিপ্ট দ্বারা স্কোয়ার তৈরি করা হবে -->
+            <!-- Squares will be created dynamically by JavaScript -->
         </div>
     </div>
 
-    <!-- গেম ওভারের জন্য মোডাল -->
+    <!-- Modal for game over -->
     <div id="game-over-modal" class="modal">
         <div class="modal-content">
-            <h3 id="modal-title">গেম শেষ!</h3>
-            <p id="modal-message">আপনার চূড়ান্ত স্কোর হলো: <span id="final-score">0</span></p>
-            <button id="retry-button">আবার চেষ্টা করুন</button>
+            <h3 id="modal-title">Game Over!</h3>
+            <p id="modal-message">Your final score is: <span id="final-score">0</span></p>
+            <button id="retry-button">Retry</button>
         </div>
     </div>
 
     <script>
-        // গেমের লজিক এখান থেকে শুরু
+        // Game logic starts here
         const score = document.querySelector("#score");
         const timeLeft = document.querySelector("#time-left");
         const grid = document.getElementById('grid');
@@ -260,7 +260,7 @@
         let timerId = null;
         let countDownTimerId = null;
 
-        // ডায়নামিকভাবে গ্রিড স্কোয়ার তৈরি করা
+        // Dynamically create grid squares
         for (let i = 1; i <= 9; i++) {
             const square = document.createElement('div');
             square.classList.add('square');
@@ -281,16 +281,17 @@
             hitPosition = randomSquare.id;
         }
 
-        // শুধুমাত্র টাচ ইভেন্টের জন্য ইভেন্ট লিসেনার যোগ করা
+        // Add event listeners for touch and click
         squares.forEach((square) => {
-            square.addEventListener("touchstart", (e) => {
-                e.preventDefault(); // এই লাইনটি মাল্টি-টাচ সমস্যা রোধ করতে সাহায্য করবে
+            function handleInteraction() {
                 if (square.id === hitPosition) {
                     result++;
                     score.textContent = result;
                     hitPosition = null;
                 }
-            });
+            }
+            square.addEventListener("touchstart", handleInteraction, { passive: false });
+            square.addEventListener("touchend", handleInteraction);
         });
 
         function moveEmoji() {
