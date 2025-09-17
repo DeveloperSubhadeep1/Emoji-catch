@@ -1,45 +1,328 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Hell King - Emoji Catcher Game</title>
+    <title>Galactic Hunter - Alien Catcher Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0d0f1a;
+            color: #d1f7ff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: radial-gradient(circle, rgba(23, 30, 50, 0.8) 0%, rgba(13, 15, 26, 0.9) 100%), url('https://placehold.co/1920x1080/0d0f1a/0d0f1a');
+            background-size: cover;
+            background-position: center;
+        }
 
-<!--     <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg"> -->
-    <link rel="stylesheet" href="style.css" />
+        .container {
+            width: 95%;
+            max-width: 400px;
+            padding: 1rem;
+            background: rgba(18, 25, 45, 0.6);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(40, 60, 90, 0.8);
+            border-radius: 1.5rem;
+            box-shadow: 0 0 40px rgba(70, 150, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .scores-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .score-box {
+            background: rgba(23, 30, 50, 0.7);
+            border: 1px solid rgba(40, 60, 90, 0.8);
+            padding: 0.75rem 1.25rem;
+            border-radius: 1rem;
+            box-shadow: inset 0 0 10px rgba(70, 150, 255, 0.1);
+        }
+
+        .score-box h2 {
+            font-size: 0.8rem;
+            color: #a0c2ff;
+        }
+
+        .score-box #score,
+        .score-box #time-left {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 8px #4a90e2;
+        }
+
+        .grid {
+            width: 95%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            padding: 10px;
+            background: rgba(23, 30, 50, 0.8);
+            border-radius: 1.5rem;
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+        }
+
+        .square {
+            width: 100%;
+            padding-top: 100%;
+            position: relative;
+            background: rgba(10, 15, 30, 0.7);
+            border: 2px solid rgba(40, 60, 90, 0.6);
+            border-radius: 1rem;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s ease-in-out, background-color 0.3s;
+        }
+
+        .square:active {
+            transform: scale(0.95);
+        }
+
+        .square.alien {
+            background-color: #2a7a4c;
+            /* Green alien background */
+            background-size: 80%;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-color: #6effb0;
+            box-shadow: 0 0 20px #6effb0, inset 0 0 10px #6effb0;
+            cursor: pointer;
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Define alien emoji assets */
+        .alien-1 { content: '👽'; }
+        .alien-2 { content: '👾'; }
+        .alien-3 { content: '🤖'; }
+        .alien-4 { content: '🛸'; }
+        .alien-5 { content: '🚀'; }
+        .alien-6 { content: '☄️'; }
+        
+        .alien::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+        
+        .alien.alien-1::before { content: '👽'; }
+        .alien.alien-2::before { content: '👾'; }
+        .alien.alien-3::before { content: '🤖'; }
+        .alien.alien-4::before { content: '🛸'; }
+        .alien.alien-5::before { content: '🚀'; }
+        .alien.alien-6::before { content: '☄️'; }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 20px #6effb0, inset 0 0 10px #6effb0;
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 30px #6effb0, inset 0 0 15px #6effb0;
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px #6effb0, inset 0 0 10px #6effb0;
+            }
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #1a2238;
+            border: 2px solid #5a6696;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 0 30px rgba(90, 102, 150, 0.5);
+        }
+
+        .modal-content h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #d1f7ff;
+        }
+
+        .modal-content p {
+            font-size: 1.25rem;
+            color: #a0c2ff;
+        }
+
+        .modal-content button {
+            margin-top: 1.5rem;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0.75rem;
+            background: linear-gradient(135deg, #4a90e2, #75b8f6);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .modal-content button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+    </style>
 </head>
 
 <body>
-    <div class="scores-container">
-        <div class="total-score">
-            <h2>Your Score:</h2>
-            <h2 id="score">0</h2>
+    <div class="container">
+        <h1 class="text-3xl font-bold mb-4 text-center">Galactic Hunter</h1>
+        <div class="scores-container">
+            <div class="score-box">
+                <h2>Score</h2>
+                <h2 id="score">0</h2>
+            </div>
+            <div class="score-box">
+                <h2>Time Left</h2>
+                <h2 id="time-left">60</h2>
+            </div>
         </div>
 
-        <div class="time">
-            <h2>Time left:</h2>
-            <h2 id="time-left">60</h2>
-        </div>
-    </div>
-
-    <div class="grid-container">
-        <div class="grid">
-            <div class="square" id="1"></div>
-            <div class="square" id="2"></div>
-            <div class="square" id="3"></div>
-            <div class="square" id="4"></div>
-            <div class="square" id="5"></div>
-            <div class="square" id="6"></div>
-            <div class="square" id="7"></div>
-            <div class="square" id="8"></div>
-            <div class="square" id="9"></div>
-            <div class="square" id="10"></div>
+        <div class="grid" id="grid">
+            <!-- Squares will be generated by JavaScript -->
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Modal for game over -->
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Game Over!</h3>
+            <p id="modal-message">Your final score is: <span id="final-score">0</span></p>
+            <button id="retry-button">Retry Mission</button>
+        </div>
+    </div>
+
+    <script>
+        // Game logic starts here
+        const score = document.querySelector("#score");
+        const timeLeft = document.querySelector("#time-left");
+        const grid = document.getElementById('grid');
+        const modal = document.getElementById('game-over-modal');
+        const finalScoreSpan = document.getElementById('final-score');
+        const retryButton = document.getElementById('retry-button');
+        const alienClasses = ['alien-1', 'alien-2', 'alien-3', 'alien-4', 'alien-5', 'alien-6'];
+
+        let result = 0;
+        let hitPosition;
+        let currentTime = 60;
+        let timerId = null;
+        let countDownTimerId = null;
+
+        // Dynamically create the grid squares
+        for (let i = 1; i <= 9; i++) {
+            const square = document.createElement('div');
+            square.classList.add('square');
+            square.id = i;
+            grid.appendChild(square);
+        }
+
+        const squares = document.querySelectorAll(".square");
+
+        function randomSquare() {
+            squares.forEach((square) => {
+                square.classList.remove('alien', ...alienClasses);
+            });
+
+            let randomSquare = squares[Math.floor(Math.random() * squares.length)];
+            const randomAlienClass = alienClasses[Math.floor(Math.random() * alienClasses.length)];
+            randomSquare.classList.add('alien', randomAlienClass);
+            hitPosition = randomSquare.id;
+        }
+
+        squares.forEach((square) => {
+            square.addEventListener("mousedown", () => {
+                if (square.id === hitPosition) {
+                    result++;
+                    score.textContent = result;
+                    hitPosition = null;
+                }
+            });
+        });
+
+        function moveEmoji() {
+            timerId = setInterval(randomSquare, 500);
+        }
+
+        function countDown() {
+            currentTime--;
+            timeLeft.textContent = currentTime;
+
+            if (currentTime <= 0) {
+                clearInterval(countDownTimerId);
+                clearInterval(timerId);
+                showModal();
+            }
+        }
+
+        function showModal() {
+            finalScoreSpan.textContent = result;
+            modal.style.display = 'flex';
+        }
+
+        function hideModal() {
+            modal.style.display = 'none';
+        }
+
+        function resetGame() {
+            hideModal();
+            result = 0;
+            currentTime = 60;
+            score.textContent = result;
+            timeLeft.textContent = currentTime;
+            hitPosition = null;
+            // Clear any lingering alien classes
+            squares.forEach(square => square.classList.remove('alien', ...alienClasses));
+            startGame();
+        }
+        
+        function startGame() {
+            moveEmoji();
+            countDownTimerId = setInterval(countDown, 1000);
+        }
+
+        // Start the game when the page loads
+        window.onload = function() {
+            startGame();
+        }
+
+        retryButton.addEventListener('click', resetGame);
+    </script>
 </body>
 
 </html>
-
