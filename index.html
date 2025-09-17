@@ -274,7 +274,7 @@
         const alienClasses = ['alien-1', 'alien-2', 'alien-3', 'alien-4', 'alien-5', 'alien-6'];
 
         let result = 0;
-        let hitPosition;
+        let hitPosition = null;
         let currentTime = 60;
         let timerId = null;
         let countDownTimerId = null;
@@ -315,7 +315,7 @@
                 e.stopPropagation();
 
                 // Use hitPosition to ensure the same alien is not hit twice
-                if (square.id == hitPosition) {
+                if (square.id === hitPosition) {
                     result++;
                     score.textContent = result;
                     square.classList.remove('alien', ...alienClasses); // Remove the alien immediately
