@@ -281,19 +281,16 @@
             hitPosition = randomSquare.id;
         }
 
-        // টাচ এবং ক্লিক ইভেন্টের জন্য ইভেন্ট লিসেনার যোগ করা
+        // শুধুমাত্র টাচ ইভেন্টের জন্য ইভেন্ট লিসেনার যোগ করা
         squares.forEach((square) => {
-            function handleInteraction() {
+            square.addEventListener("touchstart", (e) => {
+                e.preventDefault(); // এই লাইনটি মাল্টি-টাচ সমস্যা রোধ করতে সাহায্য করবে
                 if (square.id === hitPosition) {
                     result++;
                     score.textContent = result;
                     hitPosition = null;
                 }
-            }
-            // টাচ ডিভাইসের জন্য ইভেন্ট
-            square.addEventListener("touchstart", handleInteraction);
-            // ডেস্কটপ এবং কিছু টাচ ডিভাইসের জন্য ক্লিক ইভেন্ট
-            square.addEventListener("click", handleInteraction);
+            });
         });
 
         function moveEmoji() {
